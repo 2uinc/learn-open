@@ -22,21 +22,26 @@ describe LearnOpen::Opener do
 
   context "Initializer" do
     it "sets the lesson" do
-      opener = LearnOpen::Opener.new("ttt-2-board-rb-v-000","", false, false)
+      opener = LearnOpen::Opener.new("ttt-2-board-rb-v-000","", false, false, lesson_uuid: nil)
       expect(opener.target_lesson).to eq("ttt-2-board-rb-v-000")
     end
     it "sets the editor" do
-      opener = LearnOpen::Opener.new("", "atom", false, false)
+      opener = LearnOpen::Opener.new("", "atom", false, false, lesson_uuid: nil)
       expect(opener.editor).to eq("atom")
     end
     it "sets the whether to open the next lesson or not" do
-      opener = LearnOpen::Opener.new("", "", true, false)
+      opener = LearnOpen::Opener.new("", "", true, false, lesson_uuid: nil)
       expect(opener.get_next_lesson).to eq(true)
     end
 
     it "sets the clone only options" do
-      opener = LearnOpen::Opener.new("", "", true, true)
+      opener = LearnOpen::Opener.new("", "", true, true, lesson_uuid: nil)
       expect(opener.clone_only).to eq(true)
+    end
+
+    it "sets the lesson_uuid option" do
+      opener = LearnOpen::Opener.new("", "", true, true, lesson_uuid: 'im-a-uuid')
+      expect(opener.lesson_uuid).to eq('im-a-uuid')
     end
   end
 

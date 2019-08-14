@@ -33,6 +33,15 @@ module LearnOpen
         end
       end
 
+      def fetch_two_u_lesson(lesson_uuid)
+        lesson = get_two_u_lesson(lesson_uuid)
+        {
+          lesson: lesson,
+          id: lesson.id,
+          later_lesson: false
+        }
+      end
+
       def opening_current_lesson?(target_lesson, fetch_next_lesson)
         !target_lesson && !fetch_next_lesson
       end
@@ -94,6 +103,27 @@ module LearnOpen
             get_lesson(target_lesson, retries - 1)
           else
             io.puts "Cannot connect to Learn right now. Please try again."
+            logger.log('ERROR: Error connecting to Learn')
+            exit
+          end
+        end
+      end
+
+      def get_two_u_lesson(lesson_uuid, retries = 3)
+        begin
+          Timeout::timeout(15) do
+            response = client.get(
+              "/two_u/api/v1/lessons/#{lesson_uuid}",
+              headers: { 'Authorization' => "Bearer #{client.token}" }
+            )
+            LearnWeb::Client::Lesson::CurrentLesson.new(response)
+          end
+        rescue Timeout::Error
+          if retries > 0
+            io.puts 'There was a problem connecting to Learn. Retrying...'
+            get_two_u_lesson(lesson_uuid, retries - 1)
+          else
+            io.puts 'Cannot connect to Learn right now. Please try again.'
             logger.log('ERROR: Error connecting to Learn')
             exit
           end
